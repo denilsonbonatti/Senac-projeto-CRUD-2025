@@ -25,6 +25,7 @@ def criar_tela():
         id_usuario = entradas["ID:"].get()
         if not id_usuario:
             messagebox.showwarning("Erro", "Informe o ID do usuário para consultar.")
+            janela.lift()
             return
 
         try:
@@ -45,12 +46,25 @@ def criar_tela():
                     entradas["Cargo:"].insert(0, dados["cargo"])
                     entradas["Email:"].delete(0, tk.END)
                     entradas["Email:"].insert(0, dados["email"])
-                else:
-                    messagebox.showwarning("Erro", "Usuário não encontrado.")
+                    
+                    #Habilitar / Desabilitar botões
+                    botao_consultar.config(state="normal")
+                    botao_atualizar.config(state="normal")
+                    botao_novo.config(state="disabled")
+                    botao_consultar.config(state="disabled")
+                    botao_excluir.config(state="normal")
+
+            elif response.status_code == 401:
+                messagebox.showwarning("Erro", "Usuário não encontrado.")
+                janela.lift()
+            
             else:
                 messagebox.showwarning("Erro", f"Falha ao conectar: {response.status_code}")
+                janela.lift()
+
         except Exception as e:
             messagebox.showwarning("Erro", f"Problemas com o banco de dados: {str(e)}")
+            janela.lift()
     
     def novo():
         entradas["ID:"].config(state="normal")
@@ -62,8 +76,10 @@ def criar_tela():
         limpar()
         entradas["ID:"].config(state="disabled")
 
-        # Habilitar o botão "Salvar"
+        # Habilitar/desabilitar botões
         botao_salvar.config(state="normal")
+        botao_consultar.config(state="disabled")
+        botao_novo.config(state="disabled")
 
     def salvar():
         if entradas["Senha:"].get() != entradas["Confirmar Senha:"].get():
@@ -83,15 +99,25 @@ def criar_tela():
             
             if response.status_code == 201:
                 messagebox.showinfo("Sucesso", "Usuário salvo com sucesso!")
+                janela.lift()
+
+                # Habilitar/desabilitar botões
+                botao_salvar.config(state="disabled")
+                botao_consultar.config(state="disabled")
+                botao_novo.config(state="normal")
+
             else:
                 messagebox.showwarning("Erro", f"Falha ao conectar: {response.status_code}")
+                janela.lift()
         except Exception as e:
             messagebox.showwarning("Erro", f"Problemas com o banco de dados: {str(e)}")
+            janela.lift()
     
     def atualizar():
         id_usuario = entradas["ID:"].get()
         if not id_usuario:
             messagebox.showwarning("Erro", "Informe o ID do usuário para atualizar.")
+            janela.lift()
             return
 
         dados = {
@@ -107,28 +133,58 @@ def criar_tela():
             
             if response.status_code == 200:
                 messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
+                janela.lift()
             else:
                 messagebox.showwarning("Erro", f"Falha ao conectar: {response.status_code}")
+                janela.lift()
         except Exception as e:
             messagebox.showwarning("Erro", f"Problemas com o banco de dados: {str(e)}")
+            janela.lift()
     
     def excluir():
         id_usuario = entradas["ID:"].get()
         if not id_usuario:
             messagebox.showwarning("Erro", "Informe o ID do usuário para excluir.")
+            janela.lift()
             return
         
-        try:
-            url = f"{conf.url_api}/usuarios/{id_usuario}"
-            response = requests.delete(url)
-            
-            if response.status_code == 200:
-                messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
-            else:
-                messagebox.showwarning("Erro", f"Falha ao conectar: {response.status_code}")
-        except Exception as e:
-            messagebox.showwarning("Erro", f"Problemas com o banco de dados: {str(e)}")
-    
+        resposta = messagebox.askyesno("Excluir", "Tem certeza que deseja excluir o registro?")
+        if resposta:
+        
+            try:
+                url = f"{conf.url_api}/usuarios/{id_usuario}"
+                response = requests.delete(url)
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
+
+                    entradas["ID:"].config(state="normal")
+                    entradas["Nome:"].config(state="normal")
+                    entradas["Cargo:"].config(state="normal")
+                    entradas["Email:"].config(state="normal")
+                    entradas["Senha:"].config(state="normal")
+                    entradas["Confirmar Senha:"].config(state="normal")
+                    limpar()
+                    entradas["ID:"].config(state="disabled")
+
+                    # Habilitar/desabilitar botões
+                    botao_salvar.config(state="normal")
+                    botao_consultar.config(state="disabled")
+                    botao_novo.config(state="disabled")
+                    botao_atualizar.config(state="disabled")
+
+                    janela.lift()    
+                else:
+                    messagebox.showwarning("Erro", f"Falha ao conectar: {response.status_code}")
+                    janela.lift()
+            except Exception as e:
+                messagebox.showwarning("Erro", f"Problemas com o banco de dados: {str(e)}")
+                janela.lift()
+        
+        else:
+            janela.lift()
+        
+
     def limpar():
         for entrada in entradas.values():
             entrada.delete(0, tk.END)
@@ -155,7 +211,7 @@ def criar_tela():
     botao_excluir = tk.Button(frame_botoes, text="Excluir", command=excluir, width=12, state="disabled")
     botao_excluir.pack(side="left", padx=5)
 
-    botao_sair = tk.Button(frame_botoes, text="Sair", command=sair, width=12, state="disabled")
+    botao_sair = tk.Button(frame_botoes, text="Sair", command=sair, width=12)
     botao_sair.pack(side="left", padx=5)
 
     janela.mainloop()

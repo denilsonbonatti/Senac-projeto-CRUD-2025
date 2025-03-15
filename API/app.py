@@ -50,7 +50,7 @@ def obter_usuario(id):
             else:
                 return jsonify({'mensagem': 'Erro inesperado: dado não é uma tupla'}), 500
         else:
-            return jsonify({'mensagem': 'Usuário não encontrado'}), 404
+            return jsonify({'mensagem': 'Usuário não encontrado'}), 401
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 
@@ -131,6 +131,98 @@ def deletar_usuario(id):
         mysql.connection.commit()
         cur.close()
         return jsonify({'mensagem': 'Usuário deletado com sucesso'})
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+    
+# Rota para listar todos os produtos
+@app.route('/produtos', methods=['GET'])
+def listar_produtos():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, produto, quantidade, imagem, validade FROM produtos")
+        dados = cur.fetchall()
+        cur.close()
+        return jsonify(dados)
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+
+# Rota para consultar um produto pelo ID
+@app.route('/produtos/<int:id>', methods=['GET'])
+def obter_produto(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id, produto, quantidade, imagem, validade FROM produtos WHERE id = %s", (id,))
+        dado = cur.fetchone()
+        cur.close()
+        
+        if dado:
+            produto = {
+                'id': dado[0],
+                'produto': dado[1],
+                'quantidade': dado[2],
+                'imagem': dado[3],
+                'validade': dado[4]
+            }
+            return jsonify(produto), 200
+        else:
+            return jsonify({'mensagem': 'Produto não encontrado'}), 404
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+
+# Rota para adicionar um novo produto
+@app.route('/produtos', methods=['POST'])
+def criar_produto():
+    dados = request.json
+    produto = dados.get('produto')
+    quantidade = dados.get('quantidade')
+    imagem = dados.get('imagem')
+    validade = dados.get('validade')
+    
+    if not produto or not quantidade or not imagem or not validade:
+        return jsonify({'mensagem': 'Todos os campos são obrigatórios'}), 400
+    
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO produtos (produto, quantidade, imagem, validade) VALUES (%s, %s, %s, %s)",
+                    (produto, quantidade, imagem, validade))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'mensagem': 'Produto criado com sucesso'}), 201
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+
+
+# Rota para atualizar um produto existente
+@app.route('/produtos/<int:id>', methods=['PUT'])
+def atualizar_produto(id):
+    dados = request.json
+    produto = dados.get('produto')
+    quantidade = dados.get('quantidade')
+    imagem = dados.get('imagem')
+    validade = dados.get('validade')
+    
+    if not produto or not quantidade or not imagem or not validade:
+        return jsonify({'mensagem': 'Todos os campos são obrigatórios'}), 400
+    
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE produtos SET produto=%s, quantidade=%s, imagem=%s, validade=%s WHERE id=%s",
+                    (produto, quantidade, imagem, validade, id))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'mensagem': 'Produto atualizado com sucesso'})
+    except Exception as e:
+        return jsonify({'mensagem': str(e)}), 500
+
+# Rota para deletar um produto
+@app.route('/produtos/<int:id>', methods=['DELETE'])
+def deletar_produto(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("DELETE FROM produtos WHERE id = %s", (id,))
+        mysql.connection.commit()
+        cur.close()
+        return jsonify({'mensagem': 'Produto deletado com sucesso'})
     except Exception as e:
         return jsonify({'mensagem': str(e)}), 500
 

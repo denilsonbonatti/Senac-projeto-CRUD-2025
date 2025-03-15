@@ -34,7 +34,7 @@ def verifica_usuario():
 tk.Label(root, text="Área administrativa", font=("Arial Black", 14, "bold")).pack(pady=5)
 
 try:
-    imagem = tk.PhotoImage(file="ADM/imgs/logotipo.png")
+    imagem = tk.PhotoImage(file="ADM/IMGS/logotipo.png")
     tk.Label(root, image=imagem).pack(pady=10)
 except Exception as e:
     print(f"Erro ao carregar imagem: {e}")
