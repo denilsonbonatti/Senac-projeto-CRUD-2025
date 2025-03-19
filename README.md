@@ -22,6 +22,5 @@ Este repositório contém um projeto de CRUD desenvolvido para fins educacionais
    ```sh
    [comando para instalar dependências, ex: npm install, pip install -r requirements.txt]
    ```
-   ```
 ---
 Este projeto faz parte das atividades do Senac em 2025.
