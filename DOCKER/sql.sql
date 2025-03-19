@@ -21,4 +21,15 @@ CREATE TABLE produtos (
     validade DATE NOT NULL
 );
 
-INSERT INTO produtos (produto, quantidade, imagem, validade) VALUES ('Bala Chita', 100, '/imgs/foto1.jpg','2027-10-10');
+CREATE TABLE funcionarios (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    funcionario VARCHAR(60) NOT NULL,
+    cargo VARCHAR(60) NOT NULL,
+    data_contratacao DATE NOT NULL,
+    salario DECIMAL(10,2) NOT NULL,
+    foto1 VARCHAR(60) NOT NULL,
+    foto2 VARCHAR(60) NOT NULL,
+    foto3 VARCHAR(60) NOT NULL,
+    foto4 VARCHAR(60) NOT NULL,
+    foto5 VARCHAR(60) NOT NULL
+);
