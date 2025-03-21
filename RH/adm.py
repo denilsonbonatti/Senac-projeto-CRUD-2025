@@ -5,10 +5,8 @@ from datetime import datetime
 import cv2
 import os
 from PIL import Image, ImageTk
-import time
-import shutil
 import requests
-import json
+from email.utils import parsedate_to_datetime
 
 class FormularioFuncionario:
     def __init__(self, root):
@@ -137,8 +135,12 @@ class FormularioFuncionario:
                 self.cargo_entry.delete(0, tk.END)
                 self.cargo_entry.insert(0, funcionario['cargo'])
                 
-                # Converter a string da data para objeto datetime
-                data = datetime.strptime(funcionario['data_contratacao'], '%Y-%m-%d')
+                try:
+                    data = parsedate_to_datetime(funcionario['data_contratacao'])
+                except Exception:
+                    messagebox.showerror("Erro", f"Formato de data inválido: {funcionario['data_contratacao']}")
+                    return
+
                 self.data_contratacao.set_date(data)
                 
                 self.salario_entry.config(state='normal')
