@@ -137,7 +137,9 @@ class FormularioFuncionario:
                 self.cargo_entry.delete(0, tk.END)
                 self.cargo_entry.insert(0, funcionario['cargo'])
                 
-                self.data_contratacao.set_date(funcionario['data_contratacao'])
+                # Converter a string da data para objeto datetime
+                data = datetime.strptime(funcionario['data_contratacao'], '%Y-%m-%d')
+                self.data_contratacao.set_date(data)
                 
                 self.salario_entry.config(state='normal')
                 self.salario_entry.delete(0, tk.END)
