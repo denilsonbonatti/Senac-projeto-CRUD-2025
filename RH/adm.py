@@ -6,6 +6,7 @@ import cv2
 import os
 from PIL import Image, ImageTk
 import requests
+import json
 from email.utils import parsedate_to_datetime
 
 class FormularioFuncionario:

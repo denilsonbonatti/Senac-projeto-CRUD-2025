@@ -24,6 +24,8 @@ CREATE TABLE produtos (
 CREATE TABLE funcionarios (
     id int AUTO_INCREMENT PRIMARY KEY,
     funcionario VARCHAR(60) NOT NULL,
+    email VARCHAR(60) NOT NULL,
+    senha VARCHAR(15) NOT NULL,
     cargo VARCHAR(60) NOT NULL,
     data_contratacao DATE NOT NULL,
     salario DECIMAL(10,2) NOT NULL,
